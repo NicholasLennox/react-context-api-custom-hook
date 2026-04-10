@@ -4,9 +4,7 @@ import { ThemeProvider } from './context/ThemeContext'
 import App from './App'
 import './index.css'
 
-// Here is where we decide what ThemeProvider wraps.
-// by wrapping App, every component in the tree has access to theme.
-// App becomes the children inside ThemeProvider.
+// App is the children - every component in the tree has access to theme
 createRoot(document.getElementById('root')).render(
   <StrictMode>
     <ThemeProvider>
