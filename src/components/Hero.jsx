@@ -1,7 +1,11 @@
-// Hero is the one that actually needs theme
-// but it can't get it directly - it has to wait for Layout to pass it down
+import { useContext } from 'react'
+import { ThemeContext } from '../context/ThemeContext'
 
-function Hero({ theme }) {
+function Hero() {
+  // same pattern as Navbar - useContext(ThemeContext) directly.
+  // Hero gets theme without Layout knowing anything about it.
+  const { theme } = useContext(ThemeContext)
+
   return (
     <div className={`hero-${theme}`}>
       <h1>Welcome</h1>
