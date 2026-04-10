@@ -1,21 +1,6 @@
 # Context API and Custom Hooks - Theme Demo
 
-This app demonstrates a single, focused problem:
-
-*What happens when multiple components need the same piece of state, and that state lives far away from where it is used.*
-
-We use theme - light and dark mode - as a simple but understandable example.
-
-## Branch structure
-
-Each branch builds on the last. Work through them in order.
-
-- `main` - prop drilling. Theme is passed manually through the component tree.
-- `context-api` - the same result, using Context API instead of props.
-- `custom-hook` - a useTheme hook that wraps the context consumption.
-- `extra-features` - persisting the theme choice across page refreshes.
-
-## What this branch shows
+This branch introduces **custom hooks** - a pattern for wrapping and reusing hook logic under a meaningful name.
 
 In the `context-api` branch, every component that needed theme had to do this:
 
@@ -26,7 +11,7 @@ import { ThemeContext } from '../context/ThemeContext'
 const { theme } = useContext(ThemeContext)
 ```
 
-This branch wraps that into a single hook:
+Every component needs to know that theme lives in a context object called `ThemeContext`. That is an implementation detail leaking into every consumer. This branch wraps that into a single hook:
 
 ```js
 import { useTheme } from '../context/ThemeContext'
@@ -34,7 +19,7 @@ import { useTheme } from '../context/ThemeContext'
 const { theme } = useTheme()
 ```
 
-One import. One call. The component no longer knows or cares how theme is stored.
+The component no longer knows or cares how theme is stored - that is the hook's concern. This is separation of concerns in practice. If the implementation ever changes, only the hook needs updating. Every component calling `useTheme()` is unaffected.
 
 ## What is a custom hook
 
@@ -59,13 +44,11 @@ The rules of hooks are:
 - Only call hooks at the top level of a function - not inside loops, conditions, or nested functions.
 - Only call hooks inside React function components or other custom hooks.
 
-The guard clause ensures that if someone calls `useTheme()` outside of a `ThemeProvider`, they get a clear error immediately rather than a cryptic undefined somewhere down the line.
-
-A component that calls `useTheme()` does not need to know about `ThemeContext`, `useContext`, or where theme lives. It just asks for what it needs.
+The guard clause ensures that if someone calls `useTheme()` outside of a `ThemeProvider`, they get a clear error immediately rather than a cryptic `undefined` somewhere down the line.
 
 ## What changed
 
-The goal is that components stop caring about how theme works and just ask for what they need. Two things changed to get there.
+Two things changed from the `context-api` branch.
 
 `ThemeContext.jsx` gains the `useTheme` function and stops exporting `ThemeContext` directly - it becomes a private implementation detail inside the file. Nothing outside needs to reference it anymore.
 
