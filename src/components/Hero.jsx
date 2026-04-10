@@ -1,16 +1,15 @@
-import { useContext } from 'react'
-import { ThemeContext } from '../context/ThemeContext'
+import { useTheme } from '../context/ThemeContext'
 
 function Hero() {
-    // reads theme from ThemeContext - no props, no involvement from Layout
-    const { theme } = useContext(ThemeContext)
+  // one import, one call - no knowledge of ThemeContext needed
+  const { theme } = useTheme()
 
-    return (
-        <div className={`hero-${theme}`}>
-            <h1>Welcome</h1>
-            <p>This page is running in {theme} mode.</p>
-        </div>
-    )
+  return (
+    <div className={`hero-${theme}`}>
+      <h1>Welcome</h1>
+      <p>This page is running in {theme} mode.</p>
+    </div>
+  )
 }
 
 export default Hero

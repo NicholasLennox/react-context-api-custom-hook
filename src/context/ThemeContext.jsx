@@ -1,8 +1,7 @@
-import { createContext, useState } from 'react'
+import { createContext, useState, useContext } from 'react'
 
-// createContext() creates the context object.
-// we export it so components can reference it when calling useContext.
-export const ThemeContext = createContext()
+// private to this file - consumers use useTheme() instead
+const ThemeContext = createContext()
 
 // ThemeProvider owns the state and makes it available to whatever we wrap inside it
 export function ThemeProvider({ children }) {
@@ -12,7 +11,7 @@ export function ThemeProvider({ children }) {
     setTheme(prev => prev === 'light' ? 'dark' : 'light')
   }
 
-  // the object that components will receive when they call useContext(ThemeContext)
+  // the object that components will receive when they call useTheme()
   const value = {
     theme,
     toggleTheme
@@ -23,4 +22,16 @@ export function ThemeProvider({ children }) {
       {children}
     </ThemeContext.Provider>
   )
+}
+
+// a custom hook that wraps useContext - components only need to know about this
+export function useTheme() {
+
+  const context = useContext(ThemeContext)
+
+  if (!context) {
+    throw new Error('useTheme must be used within a ThemeProvider')
+  }
+
+  return context
 }

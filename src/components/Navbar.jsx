@@ -1,9 +1,8 @@
-import { useContext } from 'react'
-import { ThemeContext } from '../context/ThemeContext'
+import { useTheme } from '../context/ThemeContext'
 
 function Navbar() {
-
-  const { theme, toggleTheme } = useContext(ThemeContext)
+  // one import, one call - useTheme handles the rest internally
+  const { theme, toggleTheme } = useTheme()
 
   return (
     <nav className={`nav-${theme}`}>
