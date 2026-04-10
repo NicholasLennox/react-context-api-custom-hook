@@ -4,8 +4,7 @@ This app demonstrates a single, focused problem:
 
 *What happens when multiple components need the same piece of state, and that state lives far away from where it is used.*
 
-We use theme - light and dark mode - as the example. It is simple enough to understand immediately, but real enough to show why the problem matters.
-
+We use theme - light and dark mode - as a simple but understandable example. 
 ## Branch structure
 
 Each branch builds on the last. Work through them in order.
