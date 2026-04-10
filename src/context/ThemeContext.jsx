@@ -4,11 +4,7 @@ import { createContext, useState } from 'react'
 // we export it so components can reference it when calling useContext.
 export const ThemeContext = createContext()
 
-// ThemeProvider is a regular React component.
-// it owns the theme state and exposes it through ThemeContext.Provider.
-// the Provider accepts a value prop - whatever is in value
-// is what components will receive when they call useContext(ThemeContext).
-// children is whatever we choose to wrap with this component.
+// ThemeProvider owns the state and makes it available to whatever we wrap inside it
 export function ThemeProvider({ children }) {
   const [theme, setTheme] = useState('light')
 

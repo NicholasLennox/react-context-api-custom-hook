@@ -1,13 +1,12 @@
 import Hero from './Hero'
 
-// Layout no longer receives or passes any props.
-// compare this to the prop-drilling branch - it was carrying theme just to hand it to Hero.
+// no props - compare this to the prop-drilling branch
 function Layout() {
-  return (
-    <>
-      <Hero />
-    </>
-  )
+    return (
+        <>
+            <Hero />
+        </>
+    )
 }
 
 export default Layout
