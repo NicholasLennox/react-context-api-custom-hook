@@ -17,62 +17,46 @@ Each branch builds on the last. Work through them in order.
 
 ## What this branch shows
 
-In the `context-api` branch, every component that needed theme had to do this:
+In the `custom-hook` branch, theme resets to `'light'` every time the page refreshes. `useState('light')` always starts from the same place.
 
-```js
-import { useContext } from 'react'
-import { ThemeContext } from '../context/ThemeContext'
+This branch fixes that. When theme changes it gets saved to localStorage. When the app loads it checks localStorage first before falling back to `'light'`.
 
-const { theme } = useContext(ThemeContext)
-```
+Both changes happen inside `ThemeContext.jsx`. Nothing else in the tree is touched - the hook still works the same way, the provider still wraps the same way.
 
-This branch wraps that into a single hook:
-
-```js
-import { useTheme } from '../context/ThemeContext'
-
-const { theme } = useTheme()
-```
-
-One import. One call. The component no longer knows or cares how theme is stored.
-
-## What is a custom hook
-
-A custom hook is a function that starts with `use` and calls at least one other hook inside it.
-
-```js
-export function useTheme() {
-  const context = useContext(ThemeContext)
-
-  if (!context) {
-    throw new Error('useTheme must be used within a ThemeProvider')
-  }
-
-  return context
-}
-```
-
-`useTheme` calls `useContext` and returns the result. The `use` prefix tells React to treat it as a hook and enforce the rules of hooks on it.
-
-The rules of hooks are:
-
-- Only call hooks at the top level of a function - not inside loops, conditions, or nested functions.
-- Only call hooks inside React function components or other custom hooks.
-
-The guard clause ensures that if someone calls `useTheme()` outside of a `ThemeProvider`, they get a clear error immediately rather than a cryptic undefined somewhere down the line.
-
-A component that calls `useTheme()` does not need to know about `ThemeContext`, `useContext`, or where theme lives. It just asks for what it needs.
+This is a good example of what **separation of concerns** looks like in practice. Each piece of the system has one job, and you can change how it does that job without touching anything else. That is a direct result of the decisions made in the earlier branches - moving state out of App, hiding the context behind a hook, keeping consumers ignorant of the implementation.
 
 ## What changed
 
-The goal is that components stop caring about how theme works and just ask for what they need. Two things changed to get there.
+**Reading from localStorage on load**
 
-`ThemeContext.jsx` gains the `useTheme` function and stops exporting `ThemeContext` directly - it becomes a private implementation detail inside the file. Nothing outside needs to reference it anymore.
+```js
+const [theme, setTheme] = useState(() => {
+  return localStorage.getItem('theme') || 'light'
+})
+```
 
-Navbar and Hero each lose one import and swap `useContext(ThemeContext)` for `useTheme()`.
+Normally `useState('light')` evaluates its argument on every render - React just throws the result away after the first one. For a primitive like `'light'` that cost is nothing. For something like `localStorage.getItem()` it is a real browser operation happening on every render for no reason. The lazy initialiser - passing a function instead - tells React to only call it once on mount and never again.
 
-Everything else is identical.
+**Writing to localStorage on change**
+
+```js
+useEffect(() => {
+  localStorage.setItem('theme', theme)
+}, [theme])
+```
+
+`useEffect` with `[theme]` as the dependency runs once after every render where theme has changed. Recall, localStorage lives outside React, so we use `useEffect` to write to it.
+
+## Try it
+
+Open the browser devtools and go to Application - Storage - Local Storage. 
+
+Toggle the theme and watch the value update in real time. Then refresh the page. 
+
+The app loads with the value from localStorage instead of defaulting to `'light'`.
 
 ## What comes next
 
-The core pattern is now complete - context owns the state, the provider decides the scope, and the hook gives components a clean way to access it. Switch to the `extra-features` branch to see how we can extend it to persist the theme choice across page refreshes using `localStorage` and `useEffect`.
+This is the end of the branch sequence. The full pattern is now in place - context owns and provides the state, the custom hook gives components a clean interface to it, and localStorage keeps the choice alive across sessions.
+
+From here the natural next step is applying the same pattern to something from your own project - any piece of state that multiple components need is a candidate.

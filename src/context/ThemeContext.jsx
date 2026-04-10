@@ -1,17 +1,23 @@
-import { createContext, useState, useContext } from 'react'
+import { createContext, useState, useContext, useEffect } from 'react'
 
-// private to this file - consumers use useTheme() instead
 const ThemeContext = createContext()
 
-// ThemeProvider owns the state and makes it available to whatever we wrap inside it
 export function ThemeProvider({ children }) {
-  const [theme, setTheme] = useState('light')
+
+  // lazy initialiser - reads localStorage once on mount
+  const [theme, setTheme] = useState(() => {
+    return localStorage.getItem('theme') || 'light'
+  })
 
   const toggleTheme = () => {
     setTheme(prev => prev === 'light' ? 'dark' : 'light')
   }
 
-  // the object that components will receive when they call useTheme()
+  // keeps localStorage in sync when theme changes
+  useEffect(() => {
+    localStorage.setItem('theme', theme)
+  }, [theme])
+
   const value = {
     theme,
     toggleTheme
@@ -24,9 +30,7 @@ export function ThemeProvider({ children }) {
   )
 }
 
-// a custom hook that wraps useContext - components only need to know about this
 export function useTheme() {
-
   const context = useContext(ThemeContext)
 
   if (!context) {
