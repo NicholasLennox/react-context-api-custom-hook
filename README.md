@@ -26,8 +26,6 @@ import { ThemeContext } from '../context/ThemeContext'
 const { theme } = useContext(ThemeContext)
 ```
 
-Two imports. Every time. In every component. Every component needs to know that theme lives in a context object called `ThemeContext`. That is an implementation detail leaking into every consumer.
-
 This branch wraps that into a single hook:
 
 ```js
@@ -40,7 +38,7 @@ One import. One call. The component no longer knows or cares how theme is stored
 
 ## What is a custom hook
 
-A custom hook is a function that starts with `use` and calls at least one other hook inside it. That is the entire definition.
+A custom hook is a function that starts with `use` and calls at least one other hook inside it.
 
 ```js
 export function useTheme() {
@@ -55,6 +53,11 @@ export function useTheme() {
 ```
 
 `useTheme` calls `useContext` and returns the result. The `use` prefix tells React to treat it as a hook and enforce the rules of hooks on it.
+
+The rules of hooks are:
+
+- Only call hooks at the top level of a function - not inside loops, conditions, or nested functions.
+- Only call hooks inside React function components or other custom hooks.
 
 The guard clause ensures that if someone calls `useTheme()` outside of a `ThemeProvider`, they get a clear error immediately rather than a cryptic undefined somewhere down the line.
 
