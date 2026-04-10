@@ -1,27 +1,10 @@
 # Context API and Custom Hooks - Theme Demo
 
-This app demonstrates a single, focused problem:
+This branch introduces the **Context API** - a feature built into React that lets you make state available to any component in the tree without passing it as props.
 
-*What happens when multiple components need the same piece of state, and that state lives far away from where it is used.*
+In the `main` branch, Layout had to carry theme just to hand it to Hero. It did not use theme itself - it was just in the way. 
 
-We use theme - light and dark mode - as a simple but understandable example.
-
-## Branch structure
-
-Each branch builds on the last. Work through them in order.
-
-- `main` - prop drilling. Theme is passed manually through the component tree.
-- `context-api` - the same result, using Context API instead of props.
-- `custom-hook` - a useTheme hook that wraps the context consumption.
-- `extra-features` - persisting the theme choice across page refreshes.
-
-## What this branch shows
-
-Same app. Same result. No prop drilling.
-
-In the `main` branch, Layout had to carry theme just to hand it to Hero. It did not use theme itself - it was just in the way.
-
-This branch removes that wiring. Theme state moves out of App and into its own context file. Any component that needs theme reads it directly. Layout is no longer involved.
+Context API removes that wiring. Theme state moves out of App and into its own context file, and any component that needs it can read it directly.
 
 ```
 App
@@ -40,7 +23,7 @@ There are three moving parts: creating the context, providing the value, and rea
 export const ThemeContext = createContext()
 ```
 
-This creates the context object. It does not hold any data yet. Think of it as a named reference - both the Provider and any component that wants to read from it will import this same object. That shared reference is what connects them.
+`createContext()` returns an object. That object has a `Provider` property which is a component, and a reference you pass to `useContext()` to read the value. It does not hold any state itself - it is the shared object that connects the two sides. Both the Provider and any component that wants to read from it import this same object. That shared reference is what ties them together.
 
 **2. Providing the value**
 
@@ -60,7 +43,7 @@ export function ThemeProvider({ children }) {
 }
 ```
 
-`ThemeContext.Provider` is a component that accepts a `value` prop. Whatever is in that object is what consuming components will receive. `children` is whatever we choose to wrap with `ThemeProvider` - it does not wrap anything automatically.
+`ThemeContext.Provider` accepts a `value` prop. Whatever is in that object is what consuming components will receive. `children` is whatever we choose to wrap with `ThemeProvider` - it does not wrap anything automatically.
 
 In `main.jsx` we make that choice explicit:
 
@@ -103,6 +86,6 @@ import { ThemeContext } from '../context/ThemeContext'
 const { theme } = useContext(ThemeContext)
 ```
 
-Two imports. Every time. In every component that needs theme. It works, but it leaks the implementation detail - every consumer needs to know that theme lives in a context, and which one.
+Two imports. Every time. In every component that needs theme. It works, but every component needs to know that theme lives in a context object called `ThemeContext`. That is an implementation detail leaking into every consumer.
 
 Switch to the `custom-hook` branch to see how a single hook cleans that up.
