@@ -16,13 +16,11 @@ const [theme, setTheme] = useState(() => {
 })
 ```
 
-Normally `useState('light')` evaluates its argument on every render - React just throws the result away after the first one. 
+React re-runs your entire component function on every render. Every `useState` call runs again too - but React maintains a hidden slot for each piece of state tied to that component instance. On mount the slot is empty, so React uses the initial value. On every re-render the slot already has something, so the initial value is irrelevant.
 
-For a primitive like `'light'` that cost is nothing. 
+Here's the catch: JavaScript doesn't know that. JS evaluates arguments before the function even runs, so by the time `useState` is called, the argument is already resolved. For 'light' that costs nothing. For `localStorage.getItem()` it's a real browser operation running on every render for no reason - React receives the result and immediately throws it away.
 
-For something like `localStorage.getItem()` it is a real browser operation running on every render for no reason. 
-
-The lazy initialiser - passing a function instead - tells React to only call it once on mount and never again.
+The lazy initialiser fixes this by handing React a function instead of a value. React holds onto it, checks the slot, and only calls it if the slot is empty. The work is gated behind React's decision, not JavaScript's eagerness.
 
 **Writing to localStorage on change**
 
