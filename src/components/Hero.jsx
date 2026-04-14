@@ -12,4 +12,7 @@ function Hero() {
   )
 }
 
+// Track
+Hero.whyDidYouRender = true
+
 export default Hero

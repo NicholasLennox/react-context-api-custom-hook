@@ -12,4 +12,7 @@ function Navbar() {
   )
 }
 
+// Track
+Navbar.whyDidYouRender = true
+
 export default Navbar
