@@ -19,7 +19,7 @@ To see this in action, click the "Provider re-render" button in the app. This in
 
 ![Before optimisation](./img/theme-rerender-1.png)
 
-What caused this update: `ThemeProvider`. Theme did not change. And yet Navbar and Hero re-rendered anyway - because the `value` object looked new to React.
+What caused this update: `ThemeProvider`. Theme did not change. Yet Navbar and Hero re-rendered anyway - because the `value` object looked new to React. Every component that calls `useTheme()` is subscribed to that value, so when React sees a new object, all of them update.
 
 ## useMemo
 
